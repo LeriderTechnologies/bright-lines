@@ -1,0 +1,7 @@
+{
+  "max_tool_calls_per_session": 300,
+  "max_agents_per_session": 2,
+  "allowed_mcp_tools": [],
+  "extra_bash_deny_patterns": [],
+  "extra_secret_path_patterns": []
+}

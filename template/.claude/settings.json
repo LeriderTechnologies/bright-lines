@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "disableAutoMode": "disable",
+    "blockReadsOutsideWorkingDirectories": true,
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep"
+    ],
+    "ask": [
+      "Edit",
+      "Write",
+      "NotebookEdit",
+      "Bash",
+      "WebFetch",
+      "WebSearch",
+      "Agent",
+      "Task"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Edit(./.claude/**)",
+      "Bash(sudo:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(git push:*)",
+      "Bash(crontab:*)",
+      "Bash(rm -rf:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/safe/guard.py\" pre; rc=$?; if [ $rc -ne 0 ] && [ $rc -ne 2 ]; then echo \"BLOCKED: the Bright Lines guard could not run (exit $rc), so this action is refused. Run check_setup.py.\" >&2; rc=2; fi; exit $rc",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/safe/guard.py\" post-web",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
